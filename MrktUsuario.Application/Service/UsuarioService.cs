@@ -1,0 +1,52 @@
+﻿using AutoMapper;
+using MrktUsuario.Application.DTO;
+using MrktUsuario.Domain.Models;
+using MrktUsuario.Domain.Repository;
+
+namespace MrktUsuario.Application.Service
+{
+    public class UsuarioService : IUsuarioService
+    {
+        private readonly IUsuarioRepository usuarioRepository;
+        private readonly IMapper mapper;
+
+        public UsuarioService(IUsuarioRepository usuarioRepository, IMapper mapper)
+        {
+            this.usuarioRepository = usuarioRepository;
+            this.mapper = mapper;
+        }
+
+        public async Task<UsuarioOutputDto> Criar(UsuarioInputDto dto)
+        {
+            var usuario = this.mapper.Map<Usuario>(dto);
+            await this.usuarioRepository.Save(usuario);
+            return this.mapper.Map<UsuarioOutputDto>(usuario);
+        }
+
+        public async Task<List<UsuarioOutputDto>> ListarTodos()
+        {
+            var usuario = await this.usuarioRepository.GetAll();
+            return this.mapper.Map<List<UsuarioOutputDto>>(usuario);
+        }
+
+        public async Task<UsuarioOutputDto> BuscarPorID(string id)
+        {
+            var usuario = await this.usuarioRepository.Get(id);
+            return this.mapper.Map<UsuarioOutputDto>(usuario);
+        }
+
+        public async Task<UsuarioOutputDto> Atualizar(UsuarioOutputDto dto)
+        {
+            var usuario = this.mapper.Map<Usuario>(dto);
+            await this.usuarioRepository.Update(usuario);
+            return this.mapper.Map<UsuarioOutputDto>(usuario);
+        }
+
+        public async Task<string> Remover(string id)
+        {
+            var usuario = await this.usuarioRepository.Get(id);
+            await this.usuarioRepository.Delete(usuario);
+            return id;
+        }
+    }
+}
